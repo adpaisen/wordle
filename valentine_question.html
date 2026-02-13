@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine?</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    min-height:100vh;
+    background:linear-gradient(to bottom,#ffe6f0,#fff);
+    overflow:hidden;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    padding:20px;
+  }
+
+  h1 {
+    font-size:clamp(2rem,5vw,3rem);
+    color:#b30059;
+    margin-bottom:20px;
+    min-height:3rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align:center;
+  }
+
+  .choiceButtons {
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+
+  .yesBtn, .noBtn {
+    padding:12px 20px;
+    border-radius:12px;
+    color:white;
+    font-size:1.2rem;
+    border:none;
+    cursor:pointer;
+  }
+  .yesBtn { background:#4CAF50; }
+  .yesBtn:hover{ background:#33a52f; }
+  .noBtn { background:#ff4444; }
+  .noBtn:hover{ background:#e60000; }
+
+  #responseMessage{
+    margin-top:25px;
+    font-size:1.4rem;
+    font-weight:bold;
+    color:#333;
+    max-width:400px;
+    text-align:center;
+    z-index: 1;
+  }
+
+  /* Floating Hearts */
+  .heart {
+    position: absolute;
+    bottom: -20px;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(0); opacity:1; }
+    to { transform: translateY(-110vh); opacity:0; }
+  }
+
+</style>
+</head>
+<body>
+
+<h1 id="question"></h1>
+
+<div class="choiceButtons" id="choices">
+  <button class="yesBtn" id="yesBtn">YES 💖</button>
+  <button class="noBtn" id="noBtn">NO 🥲</button>
+</div>
+
+<div id="responseMessage"></div>
+
+<!-- Music Embed -->
+<iframe id="bgMusic" width="0" height="0" src="Disney Relaxing Piano I See the Light(No Mid-Roll Ads) - kno Music.mp3" frameborder="0" allow="autoplay" style="display:none"></iframe>
+
+<script>
+// Floating Hearts
+function createHeart(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerText="💖";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.fontSize=(Math.random()*20+15)+"px";
+  heart.style.animationDuration=(Math.random()*3+4)+"s";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHeart,500);
+
+// Confetti Function
+function launchConfetti(){
+  const duration=2*1000;
+  const end=Date.now()+duration;
+  (function frame(){
+    const shapes=['💖','✨','🏹'];
+    for(let i=0;i<5;i++){
+      const confetti=document.createElement("div");
+      confetti.style.position="fixed";
+      confetti.style.fontSize=(Math.random()*20+15)+"px";
+      confetti.innerText = shapes[Math.floor(Math.random()*shapes.length)];
+      confetti.style.left=Math.random()*100+"vw";
+      confetti.style.top="-10px";
+      confetti.style.zIndex="999";
+      document.body.appendChild(confetti);
+      confetti.animate([
+        {transform:'translateY(0px) rotate(0deg)'},
+        {transform:`translateY(${window.innerHeight+20}px) rotate(${Math.random()*360}deg)`}
+      ], {duration:2000,easing:"linear"});
+      setTimeout(()=>confetti.remove(),2000);
+    }
+    if(Date.now()<end) requestAnimationFrame(frame);
+  })();
+}
+
+// Typing Animation for Question
+function typeQuestion(text, element, callback){
+  let i=0;
+  element.innerText="";
+  const interval = setInterval(()=>{
+    element.innerText += text[i];
+    i++;
+    if(i>=text.length){
+      clearInterval(interval);
+      if(callback) callback();
+    }
+  },100); // speed of typing
+}
+
+// Show question and buttons
+window.addEventListener('load', ()=>{
+  const questionEl = document.getElementById("question");
+  const choices = document.getElementById("choices");
+
+  const text = "💖 Will you be my Valentine? 💖";
+
+  typeQuestion(text, questionEl, ()=>{
+    // After typing finishes, fade in buttons
+    choices.style.opacity="1";
+  });
+});
+
+// YES / NO Buttons
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const responseMessage=document.getElementById("responseMessage");
+
+yesBtn.onclick=()=>{
+  launchConfetti();
+  responseMessage.innerHTML=
+    "YAYYY!!! 💖🥹<br>" +
+    "Thank you so much for saying yes! That makes me really happy and I hope you're happy too 😊<br>" +
+    "Let's go on a Valentine's date tomorrow and we can do anything else you’d like to do!<br>";
+};
+
+noBtn.onclick=()=>{
+  responseMessage.innerHTML=
+"AWWW 😢💗<br>" +
+"Thank you for being honest! That really means a lot to me 😊<br>" +
+"I still appreciate you so much and I hope this made you smile 🌷<br>"; 
+};
+</script>
+</body>
+</html>
